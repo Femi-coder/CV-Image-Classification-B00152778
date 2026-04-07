@@ -42,10 +42,19 @@ with tf.device('/gpu:0'):
         batch_size=batch_size,
         labels='inferred',
         shuffle=True)
-
+    
     class_names = train_ds.class_names
     print('Class Names: ',class_names)
     num_classes = len(class_names)
+    
+      # Data augmentation
+    data_augmentation = tf.keras.Sequential([
+    tf.keras.layers.RandomFlip("horizontal"),
+    tf.keras.layers.RandomRotation(0.1),
+    tf.keras.layers.RandomZoom(0.1)
+    ])
+
+    train_ds = train_ds.map(lambda x, y: (data_augmentation(x, training=True), y))
     
     plt.figure(figsize=(10, 10))
     for images, labels in train_ds.take(2):
