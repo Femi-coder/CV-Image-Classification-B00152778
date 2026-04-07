@@ -76,7 +76,9 @@ with tf.device('/gpu:0'):
         MaxPooling2D(2,2),
         Flatten(), # flatten multidimensional outputs into single dimension for input to dense fully connected layers
         Dense(512, activation = 'relu'),
-        Dropout(0.2),
+        Dropout(0.5),
+        Dense(128, activation='relu'),
+        Dropout(0.3),
         Dense(num_classes, activation = 'softmax')
     ])
 
