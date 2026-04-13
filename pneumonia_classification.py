@@ -10,6 +10,7 @@ from keras.layers import Dense, Dropout, Flatten, Conv2D, MaxPooling2D, Rescalin
 from keras.optimizers import RMSprop,Adam
 import matplotlib.pyplot as plt
 import numpy as np
+from sklearn.metrics import classification_report
 
 
 batch_size = 12
@@ -47,7 +48,7 @@ with tf.device('/gpu:0'):
     print('Class Names: ',class_names)
     num_classes = len(class_names)
     
-      # Data augmentation
+    # Data augmentation
     data_augmentation = tf.keras.Sequential([
     tf.keras.layers.RandomFlip("horizontal"),
     tf.keras.layers.RandomRotation(0.1),
@@ -102,8 +103,20 @@ with tf.device('/gpu:0'):
     #if shuffle=True when creating the dataset, samples will be chosen randomly   
     score = model.evaluate(test_ds, batch_size=batch_size)
     print('Test accuracy:', score[1])
-
     
+    # Get true labels and predictions
+    y_true = []
+    y_pred = []
+
+    for images, labels in test_ds:
+        predictions = model.predict(images)
+        y_true.extend(labels.numpy())
+        y_pred.extend(np.argmax(predictions, axis=1))
+        
+    # Print classification report
+    print("\nClassification Report:")
+    print(classification_report(y_true, y_pred, target_names=class_names))
+            
     if fit:
         plt.plot(history.history['accuracy'])
         plt.plot(history.history['val_accuracy'])
